@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>System CBE – Samodoskonalenie</title>
@@ -327,11 +329,49 @@ let data = {
 };
 /* __CBE_DATA_END__ */
 
+// Initialize Supabase
+const { createClient } = supabase;
+const supabaseUrl = 'https://bvqrsymlwferdjkxlntc.supabase.co'; // e.g., 'https://xyz.supabase.co'
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2cXJzeW1sd2ZlcmRqa3hsbnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1ODIwMzQsImV4cCI6MjA5MTE1ODAzNH0.94euImfbnxsRAnZE9DpbFlXi4udaHgsigzHYtw0Vobo';     // Paste the key you copied here
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
 // ═══════════════════════════════════
 //  STORAGE
 // ═══════════════════════════════════
-function save() { try { localStorage.setItem('cbe_v2', JSON.stringify(data)); } catch(e){} }
-function load() { try { const s=localStorage.getItem('cbe_v2'); if(s) data=JSON.parse(s); } catch(e){} }
+async function save() {
+    try {
+        const { error } = await supabaseClient
+            .from('tracker_data')
+            .update({ content: data })
+            .eq('id', 1);
+
+        if (error) console.error("Error saving ", error);
+    } catch (e) {
+        console.error("Network error:", e);
+    }
+}
+
+async function load() {
+    try {
+        const {  dbData, error } = await supabaseClient
+            .from('tracker_data')
+            .select('content')
+            .eq('id', 1)
+            .single();
+
+        if (error) {
+            console.error("Error loading ", error);
+            return;
+        }
+
+        if (dbData && dbData.content && Object.keys(dbData.content).length > 0) {
+            data = dbData.content;
+        }
+    } catch (e) {
+        console.error("Network error:", e);
+    }
+}
+
 
 // ═══════════════════════════════════
 //  DATE UTILS
@@ -798,11 +838,19 @@ function updateDate(){ const el=document.getElementById('date-disp'); if(el) el.
 // ═══════════════════════════════════
 //  INIT
 // ═══════════════════════════════════
-load();
-checkDateReset();
-updateDate();
-renderTracker();
-setInterval(()=>{ checkDateReset(); updateDate(); }, 60000);
+async function initApp() {
+    await load(); // Wait for data to download from Supabase
+    checkDateReset();
+    updateDate();
+    renderTracker();
+    
+    setInterval(() => { 
+        checkDateReset(); 
+        updateDate(); 
+    }, 60000);
+}
+
+initApp();
 </script>
 </body>
 </html>
