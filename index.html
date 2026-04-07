@@ -844,7 +844,12 @@ function updateDate(){ const el=document.getElementById('date-disp'); if(el) el.
 //  AUTH & INIT
 // ═══════════════════════════════════
 async function loginWithGithub() {
-    await supabaseClient.auth.signInWithOAuth({ provider: 'github' });
+    await supabaseClient.auth.signInWithOAuth({ 
+        provider: 'github',
+        options: {
+            redirectTo: 'https://macoendu.github.io/CBE-tracker/'
+        }
+    });
 }
 
 async function logout() {
