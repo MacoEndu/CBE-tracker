@@ -852,7 +852,6 @@ async function logout() {
     location.reload();
 }
 async function initApp() {
-    // Poprawiona linijka poniżej:
     const {  { session } } = await supabaseClient.auth.getSession();
     
     if (!session) {
@@ -875,8 +874,6 @@ async function initApp() {
         updateDate(); 
     }, 60000);
 }
-
-
 initApp();
 
 </script>
