@@ -851,18 +851,16 @@ async function logout() {
     await supabaseClient.auth.signOut();
     location.reload();
 }
-
 async function initApp() {
-    // Sprawdź czy użytkownik jest zalogowany
+    // Poprawiona linijka poniżej:
     const {  { session } } = await supabaseClient.auth.getSession();
+    
     if (!session) {
-        // Jeśli brak sesji - ukryj aplikację, pokaż przycisk logowania
         document.querySelector('main').style.display = 'none';
         document.getElementById('login-screen').style.display = 'block';
         return; 
     }
 
-    // Jeśli zalogowany - ukryj logowanie, pokaż aplikację i przycisk wylogowania
     document.getElementById('login-screen').style.display = 'none';
     document.querySelector('main').style.display = 'block';
     document.getElementById('logout-btn').style.display = 'inline-block';
@@ -877,6 +875,7 @@ async function initApp() {
         updateDate(); 
     }, 60000);
 }
+
 
 initApp();
 
