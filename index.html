@@ -193,7 +193,12 @@ body.editing [contenteditable]:focus{background:rgba(184,122,0,.13);box-shadow:0
     <div class="date-disp" id="date-disp"></div>
   </div>
   <div class="header-right">Continuous Balanced Evaluation<br>Samodoskonalenie · Każdego dnia</div>
+  <button class="btn" onclick="logout()" id="logout-btn" style="display:none; margin-top:10px; font-size: 11px; padding: 4px 8px;">Wyloguj</button>
 </header>
+<div id="login-screen" style="display:none; text-align:center; padding: 80px 20px;">
+  <h2 style="font-family:'DM Serif Display',serif; font-size: 32px; margin-bottom: 20px;">Wymagane logowanie</h2>
+  <button class="btn primary" onclick="loginWithGithub()" style="font-size: 16px; padding: 12px 24px;">Zaloguj się przez GitHub</button>
+</div>
 
 <main>
 
@@ -836,10 +841,34 @@ function showToast(msg){ const t=document.getElementById('toast'); t.textContent
 function updateDate(){ const el=document.getElementById('date-disp'); if(el) el.textContent=new Date().toLocaleDateString('pl-PL',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); }
 
 // ═══════════════════════════════════
-//  INIT
+//  AUTH & INIT
 // ═══════════════════════════════════
+async function loginWithGithub() {
+    await supabaseClient.auth.signInWithOAuth({ provider: 'github' });
+}
+
+async function logout() {
+    await supabaseClient.auth.signOut();
+    location.reload();
+}
+
 async function initApp() {
-    await load(); // Wait for data to download from Supabase
+    // Sprawdź czy użytkownik jest zalogowany
+    const {  { session } } = await supabaseClient.auth.getSession();
+
+    if (!session) {
+        // Jeśli brak sesji - ukryj aplikację, pokaż przycisk logowania
+        document.querySelector('main').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'block';
+        return; 
+    }
+
+    // Jeśli zalogowany - ukryj logowanie, pokaż aplikację i przycisk wylogowania
+    document.getElementById('login-screen').style.display = 'none';
+    document.querySelector('main').style.display = 'block';
+    document.getElementById('logout-btn').style.display = 'inline-block';
+
+    await load(); 
     checkDateReset();
     updateDate();
     renderTracker();
@@ -851,6 +880,7 @@ async function initApp() {
 }
 
 initApp();
+
 </script>
 </body>
 </html>
