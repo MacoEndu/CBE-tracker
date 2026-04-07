@@ -855,7 +855,6 @@ async function logout() {
 async function initApp() {
     // Sprawdź czy użytkownik jest zalogowany
     const {  { session } } = await supabaseClient.auth.getSession();
-
     if (!session) {
         // Jeśli brak sesji - ukryj aplikację, pokaż przycisk logowania
         document.querySelector('main').style.display = 'none';
