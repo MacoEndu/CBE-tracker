@@ -358,11 +358,11 @@ async function save() {
 
 async function load() {
     try {
-        const {  dbData, error } = await supabaseClient
-            .from('tracker_data')
-            .select('content')
-            .eq('id', 1)
-            .single();
+        const { data: dbData, error } = await supabaseClient
+          .from('tracker_data')
+          .select('content')
+          .eq('id', 1)
+          .single();
 
         if (error) {
             console.error("Error loading ", error);
@@ -852,7 +852,7 @@ async function logout() {
     location.reload();
 }
 async function initApp() {
-  const {  { session } } = await supabaseClient.auth.getSession();
+  const { data: { session } } = await supabaseClient.auth.getSession();
   if (!session) {
         document.querySelector('main').style.display = 'none';
         document.getElementById('login-screen').style.display = 'block';
