@@ -353,7 +353,7 @@ async function save() {
 
 async function load() {
     try {
-        const {  dbData, error } = await supabaseClient
+        const { data: dbData, error } = await supabaseClient
             .from('tracker_data')
             .select('content')
             .eq('id', 1)
