@@ -293,6 +293,7 @@ body.editing [contenteditable]:focus{background:rgba(184,122,0,.13);box-shadow:0
 // ═══════════════════════════════════
 //  DATA
 // ═══════════════════════════════════
+/* __CBE_DATA_START__ */
 let data = {
   domains: [
     { id:'nauk', color:'blue', icon:'🔬', name:'Naukowiec', activities:[
@@ -321,9 +322,10 @@ let data = {
       questions:['Kim jestem teraz vs. 6 miesięcy temu?','Które nawyki utrwaliłem?','Nowe 3 cele na kolejne półrocze?'] }
   ],
   checked: {},
-  history: {},  // { 'YYYY-MM-DD': { total, max, byDomain: {id: pts} } }
+  history: {},
   lastDate: ''
 };
+/* __CBE_DATA_END__ */
 
 // ═══════════════════════════════════
 //  STORAGE
@@ -777,9 +779,14 @@ function showTab(id,btn){
 // ═══════════════════════════════════
 function saveData(){ save(); showToast('Dane zapisane!'); }
 function exportHTML(){
-  const blob=new Blob([document.documentElement.outerHTML],{type:'text/html'});
+  // Bake current data (all edits + full history) into the exported file
+  const serialized = JSON.stringify(data, null, 2);
+  const injected = '/* __CBE_DATA_START__ */\nlet data = ' + serialized + ';\n/* __CBE_DATA_END__ */';
+  let html = document.documentElement.outerHTML;
+  html = html.replace(/\/\* __CBE_DATA_START__ \*\/[\s\S]*?\/\* __CBE_DATA_END__ \*\//m, injected);
+  const blob=new Blob([html],{type:'text/html'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='cbe-tracker.html'; a.click();
-  showToast('Plik pobrany!');
+  showToast('Plik pobrany z Twoimi danymi!');
 }
 
 // ═══════════════════════════════════
