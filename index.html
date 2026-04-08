@@ -615,10 +615,28 @@ function renderDayDetail(ds) {
   }
 
   // Upgrade old history entries (no .checked) on the fly
-  if (!h.checked) {
-    // Best-effort reconstruction: mark activity as done if byDomain pts > 0
+  // Upgrade old history entries (no .checked) on the fly
+if (!h.checked) {
     h.checked = {};
-  }
+    // Greedy reconstruction from byDomain scores
+    if (h.byDomain) {
+        data.domains.forEach(dom => {
+            let remaining = h.byDomain[dom.id] || 0;
+            if (remaining <= 0) return;
+            dom.activities.forEach((act, ai) => {
+                if (remaining >= act.pts) {
+                    h.checked[dom.id + '_' + ai] = true;
+                    remaining -= act.pts;
+                }
+            });
+        });
+    }
+    // Persist reconstruction so future loads skip this step
+    if (data.history[ds]) {
+        data.history[ds].checked = h.checked;
+        save();
+    }
+}
 
   // Edit hint
   const hint = document.createElement('div');
