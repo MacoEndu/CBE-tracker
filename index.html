@@ -317,6 +317,7 @@ let data = {
 const { createClient } = supabase;
 const supabaseUrl = 'https://bvqrsymlwferdjkxlntc.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ2cXJzeW1sd2ZlcmRqa3hsbnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1ODIwMzQsImV4cCI6MjA5MTE1ODAzNH0.94euImfbnxsRAnZE9DpbFlXi4udaHgsigzHYtw0Vobo';
+const supabaseClient = createClient(supabaseUrl, supabaseKey);  // ← this line was missing
 let currentUserId = null;
 // ═══════════════════════
 //  STORAGE
